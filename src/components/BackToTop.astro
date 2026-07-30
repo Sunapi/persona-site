@@ -1,0 +1,41 @@
+---
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const label = t(locale, 'a11y.backToTop');
+---
+
+<button class="back-to-top" type="button" aria-label={label} title={label} hidden data-back-to-top>
+  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+    <path d="M8 13V3.5M8 3.5 3.5 8M8 3.5 12.5 8" fill="none" stroke="currentColor" stroke-width="1.5" />
+  </svg>
+</button>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-back-to-top]');
+  if (button) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+
+    const sync = () => {
+      const shouldShow = window.scrollY > 600;
+      if (shouldShow === visible) return;
+      visible = shouldShow;
+      button.hidden = !shouldShow;
+    };
+
+    button.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: reduceMotion.matches ? 'auto' : 'smooth',
+      });
+    });
+
+    window.addEventListener('scroll', sync, { passive: true });
+    sync();
+  }
+</script>

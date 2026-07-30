@@ -24,6 +24,7 @@
     "level.std": "Standard",
     "level.prem": "Premium",
     "project.reference": "Reference",
+    "project.articlePrefix": "Project no. ",
     "project.category": "Category",
     "project.photos": "photos",
     "gallery.title": "Gallery",
@@ -34,7 +35,10 @@
     "project.moreIn": "More in",
     "footer.language": "Language",
     "footer.blurb": "Archive of 447 completed furniture projects by Persona in Odesa.",
-    "a11y.skip": "Skip to content"
+    "a11y.skip": "Skip to content",
+    "a11y.backToTop": "Back to top",
+    "meta.siteTitle": "Persona — Portfolio archive",
+    "meta.ogLocale": "en_US"
   },
   "fi": {
     "nav.work": "Työt",
@@ -61,6 +65,7 @@
     "level.std": "Standardi",
     "level.prem": "Premium",
     "project.reference": "Viite",
+    "project.articlePrefix": "Projekti nro ",
     "project.category": "Kategoria",
     "project.photos": "kuvaa",
     "gallery.title": "Galleria",
@@ -71,7 +76,10 @@
     "project.moreIn": "Lisää kategoriassa",
     "footer.language": "Kieli",
     "footer.blurb": "Personan 447 toteutetun kalusteprojektin arkisto Odessassa.",
-    "a11y.skip": "Siirry sisältöön"
+    "a11y.skip": "Siirry sisältöön",
+    "a11y.backToTop": "Takaisin ylös",
+    "meta.siteTitle": "Persona — Portfolioarkisto",
+    "meta.ogLocale": "fi_FI"
   },
   "uk": {
     "nav.work": "Роботи",
@@ -98,6 +106,7 @@
     "level.std": "Стандарт",
     "level.prem": "Преміум",
     "project.reference": "Артикул",
+    "project.articlePrefix": "Проєкт №",
     "project.category": "Категорія",
     "project.photos": "фото",
     "gallery.title": "Галерея",
@@ -108,7 +117,10 @@
     "project.moreIn": "Ще в категорії",
     "footer.language": "Мова",
     "footer.blurb": "Архів 447 реалізованих меблевих проєктів Persona в Одесі.",
-    "a11y.skip": "До вмісту"
+    "a11y.skip": "До вмісту",
+    "a11y.backToTop": "Нагору",
+    "meta.siteTitle": "Persona — Архів портфоліо",
+    "meta.ogLocale": "uk_UA"
   },
   "ru": {
     "nav.work": "Работы",
@@ -135,6 +147,7 @@
     "level.std": "Стандарт",
     "level.prem": "Премиум",
     "project.reference": "Артикул",
+    "project.articlePrefix": "Проект №",
     "project.category": "Категория",
     "project.photos": "фото",
     "gallery.title": "Галерея",
@@ -145,6 +158,9 @@
     "project.moreIn": "Ещё в категории",
     "footer.language": "Язык",
     "footer.blurb": "Архив 447 реализованных мебельных проектов Persona в Одессе.",
-    "a11y.skip": "К содержанию"
+    "a11y.skip": "К содержанию",
+    "a11y.backToTop": "Наверх",
+    "meta.siteTitle": "Persona — Архив портфолио",
+    "meta.ogLocale": "ru_RU"
   }
 }

@@ -1,4 +1,5 @@
 ---
+import BackToTop from '../components/BackToTop.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import {
@@ -24,15 +25,15 @@ const {
   type = 'website',
 } = Astro.props;
 
-const pageTitle = title ? `${title} — Persona` : 'Persona — Portfolio';
+const pageTitle = title ? `${title} — Persona` : t(locale, 'meta.siteTitle');
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(
   image ?? '/media/covers/1682.webp',
   Astro.site,
 );
-const ogTitle = 'Persona — Portfolio archive';
-const ogDescription =
-  'A static archive of 447 completed furniture projects by Persona in Odesa.';
+const ogTitle = title ? `${title} — Persona` : t(locale, 'meta.siteTitle');
+const ogDescription = description;
+const ogLocale = t(locale, 'meta.ogLocale');
 const alternates = [
   { locale: 'en' as const, hreflang: 'en' },
   { locale: 'fi' as const, hreflang: 'fi' },
@@ -72,7 +73,7 @@ const alternates = [
     />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="Persona" />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={ogLocale} />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={ogDescription} />
     <meta property="og:url" content={canonicalUrl} />
@@ -93,5 +94,6 @@ const alternates = [
       <slot />
     </main>
     <Footer locale={locale} />
+    <BackToTop locale={locale} />
   </body>
 </html>

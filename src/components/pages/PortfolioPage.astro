@@ -14,6 +14,7 @@ import {
   localizePath,
   normalizeLevel,
   levelLabel,
+  projectReference,
   projectText,
   t,
   type Locale,
@@ -38,7 +39,7 @@ const searchIndex = orderedProjects.map((project) => {
     title: text.name,
     category: categoryName(project.category, locale),
     categorySlug: project.category.slug,
-    article: project.article,
+    article: projectReference(locale, project.article),
     level: normalizeLevel(project.size),
     levelLabel: levelLabel(locale, project.size),
     href: localizePath(
@@ -117,7 +118,11 @@ const encodedSearchIndex = JSON.stringify(searchIndex).replace(/</g, '\\u003c');
 
   <section class="portfolio-results shell" data-list data-page={String(page)}>
     <div class="meta-row portfolio-meta">
-      <span data-showing>
+      <span
+        data-showing
+        data-label-showing={t(locale, 'list.showing')}
+        data-label-of={t(locale, 'list.of')}
+      >
         {t(locale, 'list.showing')} {start}–{end} {t(locale, 'list.of')}{' '}
         {portfolio.summary.projects}
       </span>
@@ -212,8 +217,8 @@ const encodedSearchIndex = JSON.stringify(searchIndex).replace(/</g, '\\u003c');
       root.querySelectorAll<HTMLButtonElement>('[data-level]'),
     );
     const words = {
-      showing: showing?.textContent?.trim().split(/\s+/)[0] ?? '',
-      of: showing?.textContent?.includes(' из ') ? 'из' : showing?.textContent?.includes(' of ') ? 'of' : '/',
+      showing: showing?.dataset.labelShowing ?? '',
+      of: showing?.dataset.labelOf ?? '/',
     };
     let activeLevel = '';
     let oldestFirst = false;

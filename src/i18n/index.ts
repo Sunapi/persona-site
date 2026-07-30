@@ -1,7 +1,6 @@
 import categoriesJson from './categories.json';
-import contentSampleJson from './content-sample.json';
 import interfaceJson from './interface.json';
-import { ukProjectName } from './uk-project-name';
+import projectNamesJson from './project-names.json';
 import type {
   Locale,
   LocalizedProjectText,
@@ -27,19 +26,19 @@ interface CategoryTranslation {
   blurb: LocalizedValue;
 }
 
-interface ProjectTranslation {
-  id: number;
-  i18n: Partial<Record<Locale, LocalizedProjectText>>;
-}
-
 const dictionary = interfaceJson as InterfaceDictionary;
 const categoryTranslations = categoriesJson as CategoryTranslation[];
-const projectTranslations = new Map(
-  (contentSampleJson.projects as ProjectTranslation[]).map((project) => [
-    project.id,
-    project.i18n,
-  ]),
-);
+
+/** Translated project names keyed by the original Russian name: [en, fi, uk]. */
+const projectNames = projectNamesJson.names as Record<
+  string,
+  [string, string, string]
+>;
+const nameLocaleIndex: Record<Exclude<Locale, 'ru'>, 0 | 1 | 2> = {
+  en: 0,
+  fi: 1,
+  uk: 2,
+};
 
 export function t(locale: Locale, key: string): string {
   return dictionary[locale]?.[key] ?? dictionary.en[key] ?? key;
@@ -101,17 +100,9 @@ export function projectText(
   project: PortfolioProject,
   locale: Locale,
 ): LocalizedProjectText {
-  const translations = projectTranslations.get(project.id);
-  const translatedName = translations?.[locale]?.name;
-
-  return {
-    name:
-      translatedName ||
-      (locale === 'uk' ? ukProjectName(project.name) : '') ||
-      translations?.en?.name ||
-      translations?.ru?.name ||
-      project.name,
-  };
+  if (locale === 'ru') return { name: project.name };
+  const translated = projectNames[project.name]?.[nameLocaleIndex[locale]];
+  return { name: translated || project.name };
 }
 
 export function normalizeLevel(size: string): ProjectLevel {
@@ -130,6 +121,12 @@ export function levelLabel(
   return level ? t(locale, `level.${level}`) : size;
 }
 
+/**
+ * Archive articles are stored as "Проект №1-397". Rewrite the label and the
+ * number sign per locale, keeping the reference number itself intact.
+ */
 export function projectReference(locale: Locale, article: string): string {
-  return locale === 'uk' ? article.replace(/^Проект\b/u, 'Проєкт') : article;
+  const match = article.match(/^Проект\s*№\s*(\S+)$/u);
+  if (!match) return article;
+  return `${t(locale, 'project.articlePrefix')}${match[1]}`;
 }
