@@ -1,0 +1,29 @@
+---
+import LangSwitch from './LangSwitch.astro';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="shell footer-grid footer-grid--archive">
+    <div>
+      <h2>Persona</h2>
+      <p>{t(locale, 'footer.blurb')}</p>
+    </div>
+    <div>
+      <h3>{t(locale, 'footer.language')}</h3>
+      <LangSwitch locale={locale} className="footer-lang" />
+    </div>
+  </div>
+  <div class="footer-legal">
+    <div class="shell">
+      <span>© {new Date().getFullYear()} Persona</span>
+      <span>persona.od.ua</span>
+    </div>
+  </div>
+</footer>

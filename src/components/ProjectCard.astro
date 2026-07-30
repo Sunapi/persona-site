@@ -1,0 +1,65 @@
+---
+import {
+  categoryName,
+  levelLabel,
+  localizePath,
+  projectReference,
+  projectText,
+  type Locale,
+} from '../i18n';
+import type { PortfolioProject } from '../types/portfolio';
+
+interface Props {
+  project: PortfolioProject;
+  locale: Locale;
+  priority?: boolean;
+  headingLevel?: 'h2' | 'h3';
+  compactMeta?: boolean;
+}
+
+const {
+  project,
+  locale,
+  priority = false,
+  headingLevel = 'h2',
+  compactMeta = false,
+} = Astro.props;
+const href = localizePath(
+  locale,
+  `/portfolio/${project.category.slug}/${project.slug}/`,
+);
+const text = projectText(project, locale);
+const category = categoryName(project.category, locale);
+const level = levelLabel(locale, project.size);
+const article = projectReference(locale, project.article);
+const Heading = headingLevel;
+---
+
+<article class="project-card">
+  <a href={href}>
+    <div class="project-card__image">
+      {
+        project.cover ? (
+          <img
+            src={project.cover.src}
+            width={project.cover.width}
+            height={project.cover.height}
+            alt={text.name}
+            loading={priority ? 'eager' : 'lazy'}
+            fetchpriority={priority ? 'high' : 'auto'}
+          />
+        ) : (
+          <span class="project-card__fallback" aria-hidden="true">P</span>
+        )
+      }
+    </div>
+    <div class="project-card__meta">
+      <p>
+        {category}
+        {!compactMeta && article && ` · ${article}`}
+        {compactMeta && level && ` · ${level}`}
+      </p>
+      <Heading>{text.name}</Heading>
+    </div>
+  </a>
+</article>

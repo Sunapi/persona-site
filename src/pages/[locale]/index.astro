@@ -1,0 +1,15 @@
+---
+import HomePage from '../../components/pages/HomePage.astro';
+import { prefixedLocales } from '../../i18n';
+
+export function getStaticPaths() {
+  return prefixedLocales.map((locale) => ({
+    params: { locale },
+    props: { locale },
+  }));
+}
+
+const { locale } = Astro.props;
+---
+
+<HomePage locale={locale} />

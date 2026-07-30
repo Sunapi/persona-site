@@ -1,0 +1,39 @@
+---
+import LangSwitch from './LangSwitch.astro';
+import { localizePath, stripLocale, t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const pathname = stripLocale(Astro.url.pathname);
+const isPortfolio = pathname.startsWith('/portfolio');
+const homeHref = localizePath(locale, '/');
+const portfolioHref = localizePath(locale, '/portfolio/');
+const categoriesHref = localizePath(locale, '/#categories');
+---
+
+<header class="site-header">
+  <div class="shell header-row">
+    <a class="brand" href={homeHref} aria-label="Persona">
+      <img src="/logo.png" width="220" height="79" alt="Persona" />
+    </a>
+    <nav class="desktop-nav" aria-label="Primary">
+      <a href={portfolioHref} aria-current={isPortfolio ? 'page' : undefined}>
+        {t(locale, 'nav.work')}
+      </a>
+      <a href={categoriesHref}>{t(locale, 'nav.categories')}</a>
+    </nav>
+    <div class="header-actions">
+      <LangSwitch locale={locale} />
+      <details class="mobile-menu">
+        <summary aria-label="Menu"><span></span><span></span></summary>
+        <nav aria-label="Mobile">
+          <a href={portfolioHref}>{t(locale, 'nav.work')}</a>
+          <a href={categoriesHref}>{t(locale, 'nav.categories')}</a>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

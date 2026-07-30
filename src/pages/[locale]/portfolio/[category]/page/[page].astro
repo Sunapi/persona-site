@@ -1,0 +1,11 @@
+---
+import CategoryPage from '../../../../../components/pages/CategoryPage.astro';
+import { categoryPagePaths } from '../../../../../data/portfolio';
+import { prefixedLocales } from '../../../../../i18n';
+
+export function getStaticPaths() {
+  return categoryPagePaths(prefixedLocales);
+}
+---
+
+<CategoryPage {...Astro.props} />

@@ -1,0 +1,97 @@
+---
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import {
+  switchLocalePath,
+  t,
+  type Locale,
+} from '../i18n';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+}
+
+const {
+  locale,
+  title,
+  description = t(locale, 'footer.blurb'),
+  image,
+  type = 'website',
+} = Astro.props;
+
+const pageTitle = title ? `${title} — Persona` : 'Persona — Portfolio';
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const socialImage = new URL(
+  image ?? '/media/covers/1682.webp',
+  Astro.site,
+);
+const ogTitle = 'Persona — Portfolio archive';
+const ogDescription =
+  'A static archive of 447 completed furniture projects by Persona in Odesa.';
+const alternates = [
+  { locale: 'en' as const, hreflang: 'en' },
+  { locale: 'fi' as const, hreflang: 'fi' },
+  { locale: 'uk' as const, hreflang: 'uk' },
+  { locale: 'ru' as const, hreflang: 'ru' },
+];
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f2f0ea" />
+    <link rel="canonical" href={canonicalUrl} />
+    {
+      alternates.map((alternate) => (
+        <link
+          rel="alternate"
+          hreflang={alternate.hreflang}
+          href={new URL(switchLocalePath(Astro.url.pathname, alternate.locale), Astro.site)}
+        />
+      ))
+    }
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(switchLocalePath(Astro.url.pathname, 'en'), Astro.site)}
+    />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Persona" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:width" content="720" />
+    <meta property="og:image:height" content="540" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={socialImage} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">{t(locale, 'a11y.skip')}</a>
+    <Header locale={locale} />
+    <main id="content">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

@@ -1,0 +1,85 @@
+---
+import Pager from '../Pager.astro';
+import ProjectCard from '../ProjectCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  CATEGORY_PAGE_SIZE,
+  categoryPageCount,
+  pageSlice,
+  portfolio,
+  type CategoryRouteProps,
+} from '../../data/portfolio';
+import {
+  categoryBlurb,
+  categoryName,
+  localizePath,
+  t,
+} from '../../i18n';
+
+const {
+  locale,
+  page,
+  category,
+  projects,
+} = Astro.props as CategoryRouteProps;
+const visibleProjects = pageSlice(projects, page, CATEGORY_PAGE_SIZE);
+const pageCount = categoryPageCount(category);
+const name = categoryName(category, locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={name}
+  description={categoryBlurb(category, locale)}
+  image={category.cover?.src}
+>
+  <section class="category-intro shell">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href={localizePath(locale, '/portfolio/')}>
+        {t(locale, 'list.portfolio')}
+      </a>
+      <span>/</span>
+      <span aria-current="page">{name}</span>
+    </nav>
+    <div class="category-header">
+      <div>
+        <h1 class="display-title">{name}</h1>
+        <p class="meta">{category.count} {t(locale, 'stat.projects')}</p>
+      </div>
+      <p class="blurb">{categoryBlurb(category, locale)}</p>
+    </div>
+  </section>
+
+  <nav class="sibling-nav shell" aria-label={t(locale, 'nav.categories')}>
+    {
+      portfolio.categories.map((item) => (
+        <a
+          href={localizePath(locale, `/portfolio/${item.slug}/`)}
+          aria-current={item.id === category.id ? 'page' : undefined}
+        >
+          {categoryName(item, locale)}
+        </a>
+      ))
+    }
+  </nav>
+
+  <section class="category-results shell">
+    <div class="project-grid project-grid--3">
+      {
+        visibleProjects.map((project, index) => (
+          <ProjectCard
+            project={project}
+            locale={locale}
+            priority={index < 6}
+          />
+        ))
+      }
+    </div>
+    <Pager
+      locale={locale}
+      currentPage={page}
+      pageCount={pageCount}
+      basePath={`/portfolio/${category.slug}/`}
+    />
+  </section>
+</BaseLayout>

@@ -1,0 +1,55 @@
+---
+import { localizePath, t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  currentPage: number;
+  pageCount: number;
+  basePath: string;
+}
+
+const { locale, currentPage, pageCount, basePath } = Astro.props;
+
+function pageHref(page: number): string {
+  const path =
+    page === 1
+      ? `${basePath.replace(/\/$/, '')}/`
+      : `${basePath.replace(/\/$/, '')}/page/${page}/`;
+  return localizePath(locale, path);
+}
+
+const visiblePages = Array.from({ length: pageCount }, (_, index) => index + 1)
+  .filter(
+    (page) =>
+      page === 1 ||
+      page === pageCount ||
+      Math.abs(page - currentPage) <= 1,
+  );
+---
+
+{
+  pageCount > 1 && (
+    <nav class="pager" aria-label="Pagination">
+      <div class="pager__pages">
+        {currentPage > 1 && <a href={pageHref(currentPage - 1)}>←</a>}
+        {
+          visiblePages.map((page, index) => (
+            <>
+              {index > 0 && page - visiblePages[index - 1] > 1 && <span>…</span>}
+              <a
+                href={pageHref(page)}
+                aria-current={page === currentPage ? 'page' : undefined}
+              >
+                {page}
+              </a>
+            </>
+          ))
+        }
+        {currentPage < pageCount && <a href={pageHref(currentPage + 1)}>→</a>}
+      </div>
+      <a class="button-line" href={pageHref(Math.min(currentPage + 1, pageCount))}>
+        {t(locale, 'list.loadMore')}
+      </a>
+    </nav>
+  )
+}

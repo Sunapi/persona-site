@@ -1,0 +1,84 @@
+---
+import {
+  locales,
+  switchLocalePath,
+  type Locale,
+} from '../i18n';
+
+interface Props {
+  locale: Locale;
+  className?: string;
+}
+
+const { locale, className = 'lang-switch' } = Astro.props;
+const pathname = Astro.url.pathname;
+const labels: Record<Locale, string> = {
+  en: 'English',
+  fi: 'Suomi',
+  uk: 'Українська',
+  ru: 'Русский',
+};
+---
+
+<div class={className} aria-label="Language">
+  {
+    locales.map((item) => (
+      <a
+        href={switchLocalePath(pathname, item)}
+        lang={item}
+        hreflang={item}
+        aria-label={labels[item]}
+        aria-current={item === locale ? 'true' : undefined}
+      >
+        {
+          item === 'en' && (
+            <svg
+              class="lang-flag"
+              viewBox="0 0 28 20"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <rect width="28" height="20" fill="#fff" />
+              <path
+                fill="#b22234"
+                d="M0 0h28v2H0zm0 4h28v2H0zm0 4h28v2H0zm0 4h28v2H0zm0 4h28v2H0z"
+              />
+              <rect width="12" height="10" fill="#3c3b6e" />
+              <path
+                fill="#fff"
+                d="M2 2h1v1H2zm3 0h1v1H5zm3 0h1v1H8zm2 0h1v1h-1zM3 5h1v1H3zm3 0h1v1H6zm3 0h1v1H9zM2 8h1v1H2zm3 0h1v1H5zm3 0h1v1H8zm2 0h1v1h-1z"
+              />
+            </svg>
+          )
+        }
+        {
+          item === 'fi' && (
+            <svg
+              class="lang-flag"
+              viewBox="0 0 28 20"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <rect width="28" height="20" fill="#fff" />
+              <path fill="#003580" d="M0 8h28v4H0zM8 0h4v20H8z" />
+            </svg>
+          )
+        }
+        {
+          item === 'uk' && (
+            <svg
+              class="lang-flag"
+              viewBox="0 0 28 20"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <rect width="28" height="10" fill="#0057b7" />
+              <rect y="10" width="28" height="10" fill="#ffd700" />
+            </svg>
+          )
+        }
+        {item === 'ru' && <span>RU</span>}
+      </a>
+    ))
+  }
+</div>

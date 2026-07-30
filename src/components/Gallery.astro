@@ -1,0 +1,234 @@
+---
+import { t, type Locale } from '../i18n';
+import type { PortfolioImage } from '../types/portfolio';
+
+interface Props {
+  images: PortfolioImage[];
+  locale: Locale;
+  projectName: string;
+}
+
+const { images, locale, projectName } = Astro.props;
+const first = images[0];
+---
+
+{
+  first && (
+    <section
+      class="project-gallery"
+      aria-label={`${t(locale, 'gallery.title')}: ${projectName}`}
+      data-gallery
+    >
+      <div class="gallery-header">
+        <span>
+          {t(locale, 'gallery.title')} — {images.length}{' '}
+          {t(locale, 'project.photos')}
+        </span>
+        <span>{t(locale, 'gallery.hint')}</span>
+      </div>
+
+      <div class="gallery-desktop">
+        <button class="gallery-lead" type="button" data-gallery-open="0">
+          <img
+            src={first.src}
+            width={first.width}
+            height={first.height}
+            alt={projectName}
+            fetchpriority="high"
+            data-gallery-lead
+          />
+        </button>
+        <div class="gallery-caption">
+          <span data-gallery-counter>01 / {String(images.length).padStart(2, '0')}</span>
+          <span data-gallery-alt>{projectName}</span>
+        </div>
+        <ol class:list={['gallery-strip', { 'gallery-strip--scroll': images.length > 12 }]}>
+          {
+            images.map((image, index) => (
+              <li>
+                <button
+                  type="button"
+                  aria-label={`${index + 1}: ${projectName}`}
+                  aria-current={index === 0 ? 'true' : undefined}
+                  data-gallery-select={String(index)}
+                  data-src={image.src}
+                  data-alt={projectName}
+                  data-width={String(image.width)}
+                  data-height={String(image.height)}
+                >
+                  <img
+                    src={image.src}
+                    width={image.width}
+                    height={image.height}
+                    alt=""
+                    loading="lazy"
+                  />
+                </button>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="gallery-mobile-grid">
+        {
+          images.map((image, index) => (
+            <button
+              type="button"
+              data-gallery-open={String(index)}
+              aria-label={`${index + 1}: ${projectName}`}
+            >
+              <img
+                src={image.src}
+                width={image.width}
+                height={image.height}
+                alt={projectName}
+                loading={index < 4 ? 'eager' : 'lazy'}
+              />
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="lightbox" role="dialog" aria-modal="true" aria-label={t(locale, 'gallery.title')} hidden data-lightbox>
+        <div class="lightbox__bar">
+          <span data-lightbox-counter></span>
+          <button type="button" data-lightbox-close>{t(locale, 'gallery.close')}</button>
+        </div>
+        <div class="lightbox__stage">
+          <button type="button" aria-label={t(locale, 'project.previous')} data-lightbox-prev>←</button>
+          <img src={first.src} alt={projectName} data-lightbox-image />
+          <button type="button" aria-label={t(locale, 'project.next')} data-lightbox-next>→</button>
+        </div>
+        <div class="lightbox__thumbs">
+          {
+            images.map((image, index) => (
+              <button
+                type="button"
+                aria-label={`${index + 1}: ${projectName}`}
+                aria-current={index === 0 ? 'true' : undefined}
+                data-lightbox-select={String(index)}
+              >
+                <img src={image.src} alt="" loading="lazy" />
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
+    const selectButtons = Array.from(
+      gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-select]'),
+    );
+    const openButtons = Array.from(
+      gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-open]'),
+    );
+    const lightboxButtons = Array.from(
+      gallery.querySelectorAll<HTMLButtonElement>('[data-lightbox-select]'),
+    );
+    const lead = gallery.querySelector<HTMLImageElement>('[data-gallery-lead]');
+    const counter = gallery.querySelector<HTMLElement>('[data-gallery-counter]');
+    const alt = gallery.querySelector<HTMLElement>('[data-gallery-alt]');
+    const lightbox = gallery.querySelector<HTMLElement>('[data-lightbox]');
+    const lightboxImage = gallery.querySelector<HTMLImageElement>('[data-lightbox-image]');
+    const lightboxCounter = gallery.querySelector<HTMLElement>('[data-lightbox-counter]');
+    const closeButton = gallery.querySelector<HTMLButtonElement>('[data-lightbox-close]');
+    const previousButton = gallery.querySelector<HTMLButtonElement>('[data-lightbox-prev]');
+    const nextButton = gallery.querySelector<HTMLButtonElement>('[data-lightbox-next]');
+    let activeIndex = 0;
+    let returnFocus: HTMLElement | null = null;
+
+    const item = (index: number) => selectButtons[index]?.dataset;
+
+    const select = (index: number) => {
+      if (!selectButtons.length) return;
+      activeIndex = (index + selectButtons.length) % selectButtons.length;
+      const data = item(activeIndex);
+      if (!data?.src) return;
+
+      if (lead) {
+        lead.src = data.src;
+        lead.alt = data.alt || '';
+        lead.width = Number(data.width || 0);
+        lead.height = Number(data.height || 0);
+      }
+      if (counter) {
+        counter.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(selectButtons.length).padStart(2, '0')}`;
+      }
+      if (alt) alt.textContent = data.alt || '';
+      selectButtons.forEach((button, indexValue) => {
+        button.setAttribute('aria-current', String(indexValue === activeIndex));
+      });
+      lightboxButtons.forEach((button, indexValue) => {
+        button.setAttribute('aria-current', String(indexValue === activeIndex));
+      });
+      if (lightboxImage) {
+        lightboxImage.src = data.src;
+        lightboxImage.alt = data.alt || '';
+      }
+      if (lightboxCounter) {
+        lightboxCounter.textContent = `${activeIndex + 1} / ${selectButtons.length}`;
+      }
+    };
+
+    const open = (index: number, trigger: HTMLElement) => {
+      if (!lightbox) return;
+      returnFocus = trigger;
+      select(index);
+      lightbox.hidden = false;
+      document.body.classList.add('lightbox-open');
+      closeButton?.focus();
+    };
+
+    const close = () => {
+      if (!lightbox || lightbox.hidden) return;
+      lightbox.hidden = true;
+      document.body.classList.remove('lightbox-open');
+      returnFocus?.focus();
+    };
+
+    selectButtons.forEach((button, index) => {
+      button.addEventListener('click', () => select(index));
+    });
+    openButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        open(Number(button.dataset.galleryOpen || 0), button);
+      });
+    });
+    lightboxButtons.forEach((button, index) => {
+      button.addEventListener('click', () => select(index));
+    });
+    closeButton?.addEventListener('click', close);
+    previousButton?.addEventListener('click', () => select(activeIndex - 1));
+    nextButton?.addEventListener('click', () => select(activeIndex + 1));
+    lightbox?.addEventListener('click', (event) => {
+      if (event.target === lightbox) close();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (!lightbox || lightbox.hidden) return;
+      if (event.key === 'Escape') close();
+      if (event.key === 'ArrowLeft') select(activeIndex - 1);
+      if (event.key === 'ArrowRight') select(activeIndex + 1);
+      if (event.key === 'Tab') {
+        const controls = [closeButton, previousButton, nextButton].filter(
+          (control): control is HTMLButtonElement => Boolean(control),
+        );
+        if (!controls.length) return;
+        const firstControl = controls[0];
+        const lastControl = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === firstControl) {
+          event.preventDefault();
+          lastControl.focus();
+        } else if (!event.shiftKey && document.activeElement === lastControl) {
+          event.preventDefault();
+          firstControl.focus();
+        }
+      }
+    });
+  });
+</script>

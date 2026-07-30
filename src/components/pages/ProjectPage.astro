@@ -1,0 +1,140 @@
+---
+import Gallery from '../Gallery.astro';
+import ProjectCard from '../ProjectCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { ProjectRouteProps } from '../../data/portfolio';
+import {
+  categoryName,
+  levelLabel,
+  localizePath,
+  projectReference,
+  projectText,
+  t,
+} from '../../i18n';
+
+const {
+  locale,
+  project,
+  previous,
+  next,
+  related,
+} = Astro.props as ProjectRouteProps;
+const text = projectText(project, locale);
+const category = categoryName(project.category, locale);
+const article = projectReference(locale, project.article);
+const description = `${text.name}. ${t(locale, 'footer.blurb')}`;
+const galleryImages =
+  project.images.length > 0
+    ? project.images
+    : project.cover
+      ? [project.cover]
+      : [];
+---
+
+<BaseLayout
+  locale={locale}
+  title={text.name}
+  description={description}
+  image={project.cover?.src}
+  type="article"
+>
+  <article>
+    <section class="project-intro shell">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href={localizePath(locale, '/portfolio/')}>
+          {t(locale, 'list.portfolio')}
+        </a>
+        <span>/</span>
+        <a href={localizePath(locale, `/portfolio/${project.category.slug}/`)}>
+          {category}
+        </a>
+        <span>/</span>
+        <span aria-current="page">{article || project.id}</span>
+      </nav>
+
+      <header class="project-header">
+        <div>
+          <p class="page-kicker">{category}</p>
+          <h1>{text.name}</h1>
+        </div>
+        <dl class="spec-list">
+          {
+            article && (
+              <div>
+                <dt>{t(locale, 'project.reference')}</dt>
+                <dd>{article}</dd>
+              </div>
+            )
+          }
+          {
+            project.size && (
+              <div>
+                <dt>{t(locale, 'list.level')}</dt>
+                <dd>{levelLabel(locale, project.size)}</dd>
+              </div>
+            )
+          }
+          <div>
+            <dt>{t(locale, 'project.category')}</dt>
+            <dd>{category}</dd>
+          </div>
+          <div>
+            <dt>{t(locale, 'project.photos')}</dt>
+            <dd>{galleryImages.length}</dd>
+          </div>
+        </dl>
+      </header>
+    </section>
+
+    <div class="shell">
+      <Gallery
+        images={galleryImages}
+        locale={locale}
+        projectName={text.name}
+      />
+
+      {
+        previous && next && (
+          <nav class="project-pagination" aria-label="Projects">
+            <a
+              href={localizePath(
+                locale,
+                `/portfolio/${previous.category.slug}/${previous.slug}/`,
+              )}
+            >
+              <span>← {t(locale, 'project.previous')}</span>
+              <strong>{projectText(previous, locale).name}</strong>
+            </a>
+            <a
+              href={localizePath(
+                locale,
+                `/portfolio/${next.category.slug}/${next.slug}/`,
+              )}
+            >
+              <span>{t(locale, 'project.next')} →</span>
+              <strong>{projectText(next, locale).name}</strong>
+            </a>
+          </nav>
+        )
+      }
+    </div>
+
+    <section class="related-projects shell">
+      <div class="section-heading">
+        <h2>{t(locale, 'project.moreIn')} {category}</h2>
+      </div>
+      <div class="project-grid">
+        {
+          related.map((item) => (
+            <ProjectCard
+              project={item}
+              locale={locale}
+              headingLevel="h3"
+              compactMeta
+            />
+          ))
+        }
+      </div>
+    </section>
+  </article>
+</BaseLayout>

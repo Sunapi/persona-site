@@ -1,0 +1,49 @@
+---
+import {
+  categoryName,
+  localizePath,
+  type Locale,
+} from '../i18n';
+import type {
+  PortfolioCategory,
+  PortfolioImage,
+} from '../types/portfolio';
+
+interface Props {
+  category: PortfolioCategory;
+  image: PortfolioImage | null;
+  locale: Locale;
+  priority?: boolean;
+}
+
+const {
+  category,
+  image,
+  locale,
+  priority = false,
+} = Astro.props;
+---
+
+<a
+  class="category-card"
+  href={localizePath(locale, `/portfolio/${category.slug}/`)}
+>
+  {
+    image ? (
+      <img
+        src={image.src}
+        width={image.width}
+        height={image.height}
+        alt=""
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : 'auto'}
+      />
+    ) : (
+      <span class="image-fallback" aria-hidden="true">P</span>
+    )
+  }
+  <div class="category-card__meta">
+    <h3>{categoryName(category, locale)}</h3>
+    <span>{category.count}</span>
+  </div>
+</a>

@@ -1,0 +1,319 @@
+---
+import Pager from '../Pager.astro';
+import ProjectCard from '../ProjectCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  PAGE_SIZE,
+  newestProjects,
+  pageSlice,
+  portfolio,
+  portfolioPageCount,
+} from '../../data/portfolio';
+import {
+  categoryName,
+  localizePath,
+  normalizeLevel,
+  levelLabel,
+  projectText,
+  t,
+  type Locale,
+} from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  page?: number;
+}
+
+const { locale, page = 1 } = Astro.props;
+const orderedProjects = newestProjects();
+const projects = pageSlice(orderedProjects, page, PAGE_SIZE);
+const pageCount = portfolioPageCount();
+const start = (page - 1) * PAGE_SIZE + 1;
+const end = Math.min(page * PAGE_SIZE, portfolio.projects.length);
+
+const searchIndex = orderedProjects.map((project) => {
+  const text = projectText(project, locale);
+  return {
+    id: project.id,
+    title: text.name,
+    category: categoryName(project.category, locale),
+    categorySlug: project.category.slug,
+    article: project.article,
+    level: normalizeLevel(project.size),
+    levelLabel: levelLabel(locale, project.size),
+    href: localizePath(
+      locale,
+      `/portfolio/${project.category.slug}/${project.slug}/`,
+    ),
+    cover: project.cover?.src ?? '',
+    width: project.cover?.width ?? 720,
+    height: project.cover?.height ?? 540,
+  };
+});
+
+const encodedSearchIndex = JSON.stringify(searchIndex).replace(/</g, '\\u003c');
+---
+
+<BaseLayout
+  locale={locale}
+  title={t(locale, 'list.portfolio')}
+  description={t(locale, 'footer.blurb')}
+>
+  <section class="portfolio-intro shell">
+    <div>
+      <p class="page-kicker">{t(locale, 'list.allWork')}</p>
+      <h1 class="display-title">{t(locale, 'list.portfolio')}</h1>
+    </div>
+    <div class="toolbar" data-toolbar>
+      <label class="visually-hidden" for="portfolio-search">
+        {t(locale, 'list.search')}
+      </label>
+      <input
+        id="portfolio-search"
+        type="search"
+        placeholder={t(locale, 'list.search')}
+        autocomplete="off"
+        data-search
+      />
+      <button type="button" data-sort data-newest={t(locale, 'list.newest')} data-oldest={t(locale, 'list.oldest')}>
+        {t(locale, 'list.newest')} ↕
+      </button>
+      <div class="density" aria-label="Grid density">
+        {
+          [3, 4, 6].map((columns) => (
+            <button
+              type="button"
+              aria-pressed={columns === 4 ? 'true' : 'false'}
+              data-density={String(columns)}
+            >
+              {columns}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <div class="chip-bar">
+    <nav class="shell" aria-label={t(locale, 'nav.categories')}>
+      <ul class="category-nav">
+        <li>
+          <a href={localizePath(locale, '/portfolio/')} aria-current="page">
+            {t(locale, 'list.all')} · {portfolio.summary.projects}
+          </a>
+        </li>
+        {
+          portfolio.categories.map((category) => (
+            <li>
+              <a href={localizePath(locale, `/portfolio/${category.slug}/`)}>
+                {categoryName(category, locale)} · {category.count}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+
+  <section class="portfolio-results shell" data-list data-page={String(page)}>
+    <div class="meta-row portfolio-meta">
+      <span data-showing>
+        {t(locale, 'list.showing')} {start}–{end} {t(locale, 'list.of')}{' '}
+        {portfolio.summary.projects}
+      </span>
+      <div class="level-filter">
+        <span>{t(locale, 'list.level')}:</span>
+        {
+          [
+            ['', t(locale, 'list.all')],
+            ['eco', t(locale, 'level.eco')],
+            ['std', t(locale, 'level.std')],
+            ['prem', t(locale, 'level.prem')],
+          ].map(([value, label], index) => (
+            <button
+              type="button"
+              aria-pressed={index === 0 ? 'true' : 'false'}
+              data-level={value}
+            >
+              {label}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="project-grid" data-project-grid>
+      {
+        projects.map((project, index) => (
+          <ProjectCard
+            project={project}
+            locale={locale}
+            priority={index < 8}
+          />
+        ))
+      }
+    </div>
+
+    <p class="empty-results" data-empty hidden>
+      {t(locale, 'list.search')}: 0
+    </p>
+
+    <div data-static-pager>
+      <Pager
+        locale={locale}
+        currentPage={page}
+        pageCount={pageCount}
+        basePath="/portfolio/"
+      />
+    </div>
+    <div class="pager client-pager" data-client-pager hidden>
+      <span></span>
+      <button class="button-line" type="button" data-load-more>
+        {t(locale, 'list.loadMore')}
+      </button>
+    </div>
+
+    <script type="application/json" data-portfolio-index set:html={encodedSearchIndex}></script>
+  </section>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-list]').forEach((root) => {
+    const json = root.querySelector<HTMLScriptElement>('[data-portfolio-index]');
+    if (!json?.textContent) return;
+
+    interface ProjectRecord {
+      id: number;
+      title: string;
+      category: string;
+      article: string;
+      level: string;
+      levelLabel: string;
+      href: string;
+      cover: string;
+      width: number;
+      height: number;
+    }
+
+    const records = JSON.parse(json.textContent) as ProjectRecord[];
+    const grid = root.querySelector<HTMLElement>('[data-project-grid]');
+    const showing = root.querySelector<HTMLElement>('[data-showing]');
+    const empty = root.querySelector<HTMLElement>('[data-empty]');
+    const staticPager = root.querySelector<HTMLElement>('[data-static-pager]');
+    const clientPager = root.querySelector<HTMLElement>('[data-client-pager]');
+    const loadMore = root.querySelector<HTMLButtonElement>('[data-load-more]');
+    const toolbar = document.querySelector<HTMLElement>('[data-toolbar]');
+    const search = toolbar?.querySelector<HTMLInputElement>('[data-search]');
+    const sort = toolbar?.querySelector<HTMLButtonElement>('[data-sort]');
+    const densityButtons = Array.from(
+      toolbar?.querySelectorAll<HTMLButtonElement>('[data-density]') ?? [],
+    );
+    const levelButtons = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('[data-level]'),
+    );
+    const words = {
+      showing: showing?.textContent?.trim().split(/\s+/)[0] ?? '',
+      of: showing?.textContent?.includes(' из ') ? 'из' : showing?.textContent?.includes(' of ') ? 'of' : '/',
+    };
+    let activeLevel = '';
+    let oldestFirst = false;
+    let visible = 24;
+    let interactive = false;
+
+    const makeCard = (record: ProjectRecord): HTMLElement => {
+      const article = document.createElement('article');
+      article.className = 'project-card';
+      const link = document.createElement('a');
+      link.href = record.href;
+      const imageWrap = document.createElement('div');
+      imageWrap.className = 'project-card__image';
+      if (record.cover) {
+        const image = document.createElement('img');
+        image.src = record.cover;
+        image.width = record.width;
+        image.height = record.height;
+        image.alt = record.title;
+        image.loading = 'lazy';
+        imageWrap.append(image);
+      }
+      const meta = document.createElement('div');
+      meta.className = 'project-card__meta';
+      const detail = document.createElement('p');
+      detail.textContent = [record.category, record.article].filter(Boolean).join(' · ');
+      const title = document.createElement('h2');
+      title.textContent = record.title;
+      meta.append(detail, title);
+      link.append(imageWrap, meta);
+      article.append(link);
+      return article;
+    };
+
+    const filteredRecords = () => {
+      const query = search?.value.trim().toLocaleLowerCase() ?? '';
+      const result = records.filter((record) => {
+        const matchesLevel = !activeLevel || record.level === activeLevel;
+        const haystack = `${record.title} ${record.category} ${record.article}`.toLocaleLowerCase();
+        return matchesLevel && (!query || haystack.includes(query));
+      });
+      return result.sort((left, right) =>
+        oldestFirst ? left.id - right.id : right.id - left.id,
+      );
+    };
+
+    const render = () => {
+      if (!grid) return;
+      interactive = true;
+      const filtered = filteredRecords();
+      const page = filtered.slice(0, visible);
+      grid.replaceChildren(...page.map(makeCard));
+      if (showing) {
+        showing.textContent = `${words.showing} ${page.length} ${words.of} ${filtered.length}`;
+      }
+      if (empty) empty.hidden = filtered.length !== 0;
+      if (staticPager) staticPager.hidden = true;
+      if (clientPager) clientPager.hidden = filtered.length <= visible;
+    };
+
+    search?.addEventListener('input', () => {
+      visible = 24;
+      render();
+    });
+    sort?.addEventListener('click', () => {
+      oldestFirst = !oldestFirst;
+      sort.textContent = `${oldestFirst ? sort.dataset.oldest : sort.dataset.newest} ↕`;
+      render();
+    });
+    levelButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeLevel = button.dataset.level || '';
+        visible = 24;
+        levelButtons.forEach((item) => {
+          item.setAttribute('aria-pressed', String(item === button));
+        });
+        render();
+      });
+    });
+    densityButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (!grid) return;
+        grid.style.setProperty('--cols', button.dataset.density || '4');
+        densityButtons.forEach((item) => {
+          item.setAttribute('aria-pressed', String(item === button));
+        });
+      });
+    });
+    loadMore?.addEventListener('click', () => {
+      visible += 24;
+      render();
+    });
+
+    if (!interactive) {
+      const currentDensity = densityButtons.find(
+        (button) => button.getAttribute('aria-pressed') === 'true',
+      );
+      if (grid && currentDensity) {
+        grid.style.setProperty('--cols', currentDensity.dataset.density || '4');
+      }
+    }
+  });
+</script>

@@ -1,0 +1,136 @@
+---
+import CategoryCard from '../CategoryCard.astro';
+import ProjectCard from '../ProjectCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { newestProjects, portfolio } from '../../data/portfolio';
+import {
+  categoryName,
+  categoryTranslation,
+  localizePath,
+  projectText,
+  t,
+  type Locale,
+} from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const projects = newestProjects();
+const featured =
+  portfolio.projects.find((project) => project.id === 1682 && project.cover) ??
+  projects.find((project) => project.cover);
+const latest = projects.slice(0, 8);
+
+const categoryCards = portfolio.categories.map((category) => {
+  const preferredCover = categoryTranslation(category)?.cover;
+  const image =
+    portfolio.projects.find(
+      (project) => project.cover?.src === preferredCover,
+    )?.cover ??
+    portfolio.projects.find(
+      (project) => project.category.id === category.id && project.cover,
+    )?.cover ??
+    category.cover;
+  return { category, image };
+});
+
+const featuredText = featured ? projectText(featured, locale) : null;
+---
+
+<BaseLayout
+  locale={locale}
+  description={t(locale, 'footer.blurb')}
+  image={featured?.cover?.src}
+>
+  <section class="hero shell">
+    <div>
+      <p class="page-kicker">{t(locale, 'home.kicker')}</p>
+      <h1>{t(locale, 'home.title')}</h1>
+      <p class="hero__intro">{t(locale, 'home.lead')}</p>
+      <dl class="hero__stats">
+        <div>
+          <dt>{t(locale, 'stat.projects')}</dt>
+          <dd>{portfolio.summary.projects}</dd>
+        </div>
+        <div>
+          <dt>{t(locale, 'stat.categories')}</dt>
+          <dd>{portfolio.summary.categories}</dd>
+        </div>
+      </dl>
+    </div>
+
+    {
+      featured?.cover && featuredText && (
+        <a
+          class="hero__image"
+          href={localizePath(
+            locale,
+            `/portfolio/${featured.category.slug}/${featured.slug}/`,
+          )}
+        >
+          <img
+            src={featured.cover.src}
+            width={featured.cover.width}
+            height={featured.cover.height}
+            alt={featuredText.name}
+            fetchpriority="high"
+          />
+          <div class="hero__caption">
+            <div>
+              <p class="meta">
+                {t(locale, 'home.featured')} ·{' '}
+                {categoryName(featured.category, locale)}
+              </p>
+              <h2>{featuredText.name}</h2>
+            </div>
+            <span class="meta">
+              {featured.images.length} {t(locale, 'project.photos')} ↗
+            </span>
+          </div>
+        </a>
+      )
+    }
+  </section>
+
+  <section class="home-section shell" id="categories">
+    <div class="section-heading">
+      <h2>{t(locale, 'home.bySpace')}</h2>
+      <p>
+        {portfolio.summary.categories} {t(locale, 'stat.categories')} ·{' '}
+        {portfolio.summary.projects} {t(locale, 'stat.projects')}
+      </p>
+    </div>
+    <div class="category-grid">
+      {
+        categoryCards.map(({ category, image }, index) => (
+          <CategoryCard
+            category={category}
+            image={image}
+            locale={locale}
+            priority={index < 3}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="home-section home-section--latest shell">
+    <div class="section-heading">
+      <h2>{t(locale, 'home.latest')}</h2>
+    </div>
+    <div class="project-grid">
+      {
+        latest.map((project) => (
+          <ProjectCard
+            project={project}
+            locale={locale}
+            headingLevel="h3"
+            compactMeta
+          />
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

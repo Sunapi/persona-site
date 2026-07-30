@@ -1,0 +1,12 @@
+---
+import PortfolioPage from '../../../components/pages/PortfolioPage.astro';
+import { portfolioPagePaths } from '../../../data/portfolio';
+
+export function getStaticPaths() {
+  return portfolioPagePaths(['en']);
+}
+
+const { locale, page } = Astro.props;
+---
+
+<PortfolioPage locale={locale} page={page} />

@@ -1,0 +1,164 @@
+[
+  {
+    "id": 40,
+    "slug": "kukhni",
+    "count": 97,
+    "cover": "/media/covers/1704.webp",
+    "name": {
+      "en": "Kitchens",
+      "fi": "Keittiöt",
+      "uk": "Кухні",
+      "ru": "Кухни"
+    },
+    "blurb": {
+      "en": "97 kitchen projects, from compact studio layouts to floor-to-ceiling installations.",
+      "fi": "97 keittiöprojektia pienistä studiokeittiöistä kattoon ulottuviin kokonaisuuksiin.",
+      "uk": "97 проєктів кухонь — від компактних студійних до рішень під стелю.",
+      "ru": "97 проектов кухонь — от компактных студийных до решений под потолок."
+    }
+  },
+  {
+    "id": 41,
+    "slug": "shkafy",
+    "count": 96,
+    "cover": "/media/covers/1713.webp",
+    "name": {
+      "en": "Wardrobes",
+      "fi": "Vaatekaapit",
+      "uk": "Шафи",
+      "ru": "Шкафы"
+    },
+    "blurb": {
+      "en": "96 wardrobe projects: built-in and free-standing, sliding and hinged.",
+      "fi": "96 vaatekaappiprojektia: sisäänrakennettuja ja vapaasti seisovia, liuku- ja saranaovin.",
+      "uk": "96 проєктів шаф: вбудовані й корпусні, купе та з розпашними дверима.",
+      "ru": "96 проектов шкафов: встроенные и корпусные, купе и с распашными дверями."
+    }
+  },
+  {
+    "id": 42,
+    "slug": "detskie",
+    "count": 35,
+    "cover": "/media/covers/1656.webp",
+    "name": {
+      "en": "Kids’ rooms",
+      "fi": "Lastenhuoneet",
+      "uk": "Дитячі",
+      "ru": "Детские"
+    },
+    "blurb": {
+      "en": "35 children’s-room projects with storage, desks, beds and shelving.",
+      "fi": "35 lastenhuoneprojektia, joissa on säilytystä, työpöytiä, sänkyjä ja hyllyjä.",
+      "uk": "35 проєктів дитячих кімнат: зберігання, столи, ліжка та стелажі.",
+      "ru": "35 проектов детских комнат: хранение, столы, кровати и стеллажи."
+    }
+  },
+  {
+    "id": 43,
+    "slug": "kabinety",
+    "count": 46,
+    "cover": "/media/covers/1677.webp",
+    "name": {
+      "en": "Studies & offices",
+      "fi": "Työhuoneet",
+      "uk": "Кабінети",
+      "ru": "Кабинеты"
+    },
+    "blurb": {
+      "en": "46 home-study, salon and office furniture projects.",
+      "fi": "46 työhuone-, salonki- ja toimistokalusteprojektia.",
+      "uk": "46 проєктів меблів для домашніх кабінетів, салонів та офісів.",
+      "ru": "46 проектов мебели для домашних кабинетов, салонов и офисов."
+    }
+  },
+  {
+    "id": 44,
+    "slug": "gostinnye",
+    "count": 36,
+    "cover": "/media/covers/1714.webp",
+    "name": {
+      "en": "Living rooms",
+      "fi": "Olohuoneet",
+      "uk": "Вітальні",
+      "ru": "Гостиные"
+    },
+    "blurb": {
+      "en": "36 living-room projects with media walls, display units and storage.",
+      "fi": "36 olohuoneprojektia: mediaseiniä, vitriinejä ja säilytysratkaisuja.",
+      "uk": "36 проєктів віталень: ТВ-зони, вітрини та системи зберігання.",
+      "ru": "36 проектов гостиных: ТВ-зоны, витрины и системы хранения."
+    }
+  },
+  {
+    "id": 45,
+    "slug": "sanuzly",
+    "count": 41,
+    "cover": "/media/covers/1642.webp",
+    "name": {
+      "en": "Bathroom furniture",
+      "fi": "Kylpyhuonekalusteet",
+      "uk": "Меблі для ванної",
+      "ru": "Мебель в ванную"
+    },
+    "blurb": {
+      "en": "41 bathroom-furniture projects with vanities, cabinets and storage.",
+      "fi": "41 kylpyhuonekalusteprojektia: allaskaappeja, peilikaappeja ja säilytystä.",
+      "uk": "41 проєкт меблів для ванних кімнат: тумби, шафи та системи зберігання.",
+      "ru": "41 проект мебели для ванных комнат: тумбы, шкафы и системы хранения."
+    }
+  },
+  {
+    "id": 46,
+    "slug": "spalni",
+    "count": 46,
+    "cover": "/media/covers/1711.webp",
+    "name": {
+      "en": "Bedrooms",
+      "fi": "Makuuhuoneet",
+      "uk": "Спальні",
+      "ru": "Спальни"
+    },
+    "blurb": {
+      "en": "46 bedroom projects with beds, wardrobes and bedside storage.",
+      "fi": "46 makuuhuoneprojektia: sänkyjä, vaatekaappeja ja yöpöytiä.",
+      "uk": "46 проєктів спалень: ліжка, шафи та приліжкове зберігання.",
+      "ru": "46 проектов спален: кровати, шкафы и прикроватное хранение."
+    }
+  },
+  {
+    "id": 47,
+    "slug": "prikhozhie",
+    "count": 39,
+    "cover": "/media/covers/1685.webp",
+    "name": {
+      "en": "Entryways",
+      "fi": "Eteiset",
+      "uk": "Передпокої",
+      "ru": "Прихожие"
+    },
+    "blurb": {
+      "en": "39 entryway projects with wardrobes, benches, mirrors and storage.",
+      "fi": "39 eteisprojektia: vaatekaappeja, penkkejä, peilejä ja säilytystä.",
+      "uk": "39 проєктів передпокоїв: шафи, сидіння, дзеркала та зберігання.",
+      "ru": "39 проектов прихожих: шкафы, сиденья, зеркала и хранение."
+    }
+  },
+  {
+    "id": 48,
+    "slug": "eksklyuziv",
+    "count": 11,
+    "cover": "/media/covers/1341.webp",
+    "name": {
+      "en": "Bespoke pieces",
+      "fi": "Uniikkikalusteet",
+      "uk": "Ексклюзивні меблі",
+      "ru": "Эксклюзивная мебель"
+    },
+    "blurb": {
+      "en": "11 individual pieces, including dressing tables and curved fronts.",
+      "fi": "11 yksittäiskappaletta, kuten meikkipöytiä ja kaarevia ovia.",
+      "uk": "11 окремих предметів, зокрема туалетні столики та радіусні фасади.",
+      "ru": "11 отдельных предметов, включая туалетные столики и радиусные фасады."
+    }
+  }
+]
